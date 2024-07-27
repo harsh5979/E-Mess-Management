@@ -20,14 +20,6 @@
       display: flex;
       gap: 10px;
     }
-    .total-row {
-      font-weight: bold;
-    }
-    .button-container {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-start;
-    }
   </style>
 </head>
 <body>
@@ -85,7 +77,6 @@
     </thead>
     <tbody>
       <% let totalFees = 0; %>
-      <% let grandTotalMessage = []; %>
       <% monthlyFees.forEach(fee => { %>
         <% const feeKey = `${fee.month} ${fee.year}`; %>
         <% if (student.pendingFees.has(feeKey)) { %>
@@ -97,10 +88,17 @@
             <td><%= isPending ? "Yes" : "No" %></td>
             <td class="action-buttons">
               <% if (isPending) { %>
-                <a href="upi://pay?pa=resm7848@paytm&pn=RESMIT%20DHOLARIYA&cu=INR&am=<%= fee.feeAmount %>&tn=<%= feeKey %>">
-                  <button>Pay Now</button>
-                </a>
+                <form
+                  id="markAsPaidForm"
+                  action="/admin/mark-fee-as-paid/<%= student._id %>/<%= feeKey %>"
+                  method="post"
+                >
+                  <button type="button" onclick="confirmMarkAsPaid()">Mark as Paid</button>
+                </form>
               <% } else { %>
+                <% if (!paymentDate) { %>
+                  <button disabled>Not Applicable</button>
+                <% } %>
                 <% if (paymentDate) { %>
                   <button disabled>Fees Paid</button>
                   <a href="/admin/download-receipt/<%= student._id %>/<%= fee.month %>/<%= fee.year %>">
@@ -112,28 +110,26 @@
           </tr>
           <% if (isPending) { %>
             <% totalFees += fee.feeAmount; %>
-            <% grandTotalMessage.push(feeKey); %>
           <% } %>
         <% } %>
       <% }); %>
-      <tr class="total-row">
-        <td>Total Pending Fees</td>
-        <td colspan="2"><%= totalFees %></td>
-        <td>
-          <% if (totalFees > 0) { %>
-            <a href="upi://pay?pa=resm7848@paytm&pn=RESMIT%20DHOLARIYA&cu=INR&am=<%= totalFees %>&tn=<%= grandTotalMessage.join('%2C%20') %>">
-              <button>Pay Grand Total</button>
-            </a>
-          <% } %>
-        </td>
+      <tr>
+        <th>Total Pending Fees</th>
+        <td colspan="3"><%= totalFees %></td>
       </tr>
     </tbody>
   </table>
 
-  <div class="button-container">
-    <a href="/student/logout">
-      <button>Logout</button>
-    </a>
-  </div>
+  <a href="/admin/dashboard">
+    <button>Back to Admin Page</button>
+  </a>
+
+  <script>
+    function confirmMarkAsPaid() {
+      if (confirm("Are you sure you want to mark this fee as paid?")) {
+        document.getElementById("markAsPaidForm").submit();
+      }
+    }
+  </script>
 </body>
 </html>

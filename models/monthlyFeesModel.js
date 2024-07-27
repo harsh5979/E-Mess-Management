@@ -7,7 +7,7 @@ const monthlyFeesSchema = new mongoose.Schema({
     required: true,
   },
   year: {
-    type: String,
+    type: Number,
     required: true,
   },
   feeAmount: {
@@ -24,5 +24,5 @@ const monthlyFeesSchema = new mongoose.Schema({
   },
 });
 
-const MonthlyFees = mongoose.model("MonthlyFees", monthlyFeesSchema);
-module.exports = MonthlyFees;
+
+module.exports = mongoose.model("MonthlyFees", monthlyFeesSchema);;

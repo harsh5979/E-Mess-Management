@@ -1,49 +1,31 @@
-require("dotenv").config()
-const express = require("express");
-const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
-const session = require("express-session");
-const passport = require("passport");
-const flash = require("connect-flash");
-const studentRoutes = require("./routes/student");
-const adminRoutes = require("./routes/admin");
-const passportConfig = require("./config/passport");
-const connectdb = require("./db");
-
-
-
+require('dotenv').config()
+const express = require('express');
 const app = express();
+const bodyparser = require('body-parser');
+// const port = process.env.PORT || 3000;
+const port =  3000;
+const cors = require('cors');
 
-// Database connection
 
-connectdb();
+const authRouter = require('./routes/authrouter');
 
-// Middleware
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(
-  session({
-    secret: "your_secret_key",
-    resave: false,
-    saveUninitialized: false,
-  })
-);
-app.use(flash());
-app.use(passport.initialize());
-app.use(passport.session());
+const admin = require('./routes/adminRoutes')
+const student = require('./routes/studentRoutes')
+const connectdb = require('./databaseSetup');
 
-// Passport configuration
-passportConfig(passport);
+app.use(cors());
+app.use(bodyparser.json());
 
-// View engine
-app.set("view engine", "ejs");
-app.set("views", "views");
 
-// Routes
-app.use("/admin", adminRoutes);
-app.use("/student", studentRoutes);
+// router is hear
+app.use("/auth/api", authRouter);
+app.use("/admin", admin);
+app.use("/student", student);
 
-// Start server
-const PORT =  3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+
+// connectdb ......
+app.listen(port, (req, res) => {
+  connectdb();
+
+  console.log(`the server run in port :${port}`)
 });

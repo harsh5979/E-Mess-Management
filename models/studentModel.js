@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
+// const bcrypt = require("bcrypt");
 
 const studentSchema = new mongoose.Schema({
   username: {
@@ -20,7 +20,7 @@ const studentSchema = new mongoose.Schema({
     required: true,
   },
   roomNumber: {
-    type: String,
+    type: Number,
     required: true,
   },
   branch: {
@@ -28,7 +28,7 @@ const studentSchema = new mongoose.Schema({
     required: true,
   },
   batch: {
-    type: String,
+    type: Number,
     required: true,
   },
   gender: {
@@ -36,7 +36,7 @@ const studentSchema = new mongoose.Schema({
     required: true,
   },
   mobileNumber: {
-    type: String,
+    type: Number,
     required: true,
   },
   enrollmentNumber: {
@@ -53,22 +53,26 @@ const studentSchema = new mongoose.Schema({
     of: Date,
     default: {},
   },
-});
-
-// Method to hash password before saving
-studentSchema.pre("save", async function (next) {
-  if (this.isModified("password") || this.isNew) {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
+  isadmin: {
+    type: Boolean,
+    default: false
   }
-  next();
 });
 
-// Method to compare given password with the hashed password
-studentSchema.methods.validPassword = async function (password) {
-  return await bcrypt.compare(password, this.password);
-};
+// // Method to hash password before saving
+// studentSchema.pre("save", async function (next) {
+//   if (this.isModified("password") || this.isNew) {
+//     const salt = await bcrypt.genSalt(10);
+//     this.password = await bcrypt.hash(this.password, salt);
+//   }
+//   next();
+// });
 
-const Student = mongoose.model("Student", studentSchema);
+// // Method to compare given password with the hashed password
+// studentSchema.methods.validPassword = async function (password) {
+//   return await bcrypt.compare(password, this.password);
+// };
 
-module.exports = Student;
+
+
+module.exports = mongoose.model("Student", studentSchema);

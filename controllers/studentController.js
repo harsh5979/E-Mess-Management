@@ -13,13 +13,13 @@ exports.postLogin = passport.authenticate("student-local", {
 });
 
 exports.getDashboard = async (req, res) => {
-  if (!req.isAuthenticated()) {
-    return res.redirect("/student/login");
-  }
+  // if (!req.isAuthenticated()) {
+  //   return res.json({message:"not access"});
+  // }
 
   try {
     // Retrieve the student data
-    const student = await Student.findById(req.user._id);
+    const student = await Student.findById(req.user.id);
 
     if (!student) {
       return res.status(404).send("Student not found");
@@ -29,10 +29,10 @@ exports.getDashboard = async (req, res) => {
     const monthlyFees = await MonthlyFees.find({});
 
     // Render the student dashboard with student data and monthly fees
-    res.render("studentDashboard", { student, monthlyFees });
+    res.json({ student, monthlyFees });
   } catch (err) {
     console.error("Error retrieving student data:", err);
-    res.status(500).send("Server Error");
+    res.status(500).json("Server Error");
   }
 };
 
